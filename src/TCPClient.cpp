@@ -64,28 +64,3 @@ uint64_t TCPClient::receive_message(uint8_t *data, uint64_t data_size) {
     return static_cast<uint64_t >(result);
 }
 
-void TCPClient::resolve(in_addr *address, const std::string &host) {
-    int rc, err;
-    struct hostent result;
-    struct hostent *result_ptr;
-    auto buffer_size = 4096U;
-    auto buffer = malloc(buffer_size);
-    while ((rc = gethostbyname_r(host.c_str(), &result, reinterpret_cast<char *>(buffer),
-                                  buffer_size, &result_ptr, &err)) == ERANGE) {
-        /* expand buf */
-        buffer_size *= 2;
-        auto tmp = realloc(buffer, buffer_size);
-        if (tmp == NULL) {
-            free(buffer);
-	    std::cerr << "Cannot allocate buffer for resolving hostname" << std::endl;
-        } else {
-            buffer = tmp;
-        }
-    }
-    memcpy(reinterpret_cast<void *>(address), result.h_addr_list[0],
-           static_cast<size_t>(result.h_length));
-    free(buffer);
-    if (rc != 0 || result_ptr == NULL) {
-      std::cerr << "Cannot resolve hostname" << std::endl;;
-    }
-}

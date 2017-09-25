@@ -19,7 +19,6 @@ class TCPClient {
     uint64_t receive_message(uint8_t *data, uint64_t data_size);
 
  private:
-    void resolve(in_addr *address, const std::string &host);
     int m_socket;
     sockaddr_in m_server_addr;
 };
